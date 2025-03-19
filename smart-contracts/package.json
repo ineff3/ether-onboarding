@@ -1,0 +1,22 @@
+{
+  "name": "smart-contracts",
+  "version": "1.0.0",
+  "description": "",
+  "packageManager": "pnpm@9.5.0",
+  "private": true,
+  "scripts": {
+    "build": "forge build",
+    "clean": "forge clean",
+    "lint": "prettier --list-different --plugin=prettier-plugin-solidity '{src*,test*}/**/*.sol' && pnpm solhint 'src*/**/*.sol'",
+    "lint:fix": "prettier --write --plugin=prettier-plugin-solidity '{src*,test*}/**/*.sol' && pnpm solhint --fix 'src*/**/*.sol'",
+    "test": "forge test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "prettier-plugin-solidity": "^1.4.1",
+    "solhint": "^5.0.3"
+  }
+}
