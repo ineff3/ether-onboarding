@@ -11,7 +11,7 @@ contract EtherSplitterTest is Test {
 
         address me = makeAddr("John");
 
-         vm.deal(me, 1 ether);
+        vm.deal(me, 1 ether);
         vm.startPrank(me);
 
         assumePayable(r1);
