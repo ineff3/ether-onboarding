@@ -8,7 +8,8 @@ contract AllowanceTest is Test {
     GoldToken goldToken;
     address owner;
     address spender;
-    uint256 constant ALLOW_AMOUNT = 10 * 10 ** 18;
+
+    uint256 constant ALLOW_AMOUNT = 10;
 
     function setUp() public {
         goldToken = new GoldToken();

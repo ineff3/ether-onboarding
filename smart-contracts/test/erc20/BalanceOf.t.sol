@@ -2,17 +2,26 @@
 pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
-import {TestableGoldToken} from "../../src/01_ERC20/TestableGoldToken.sol";
+import {GoldToken} from "../../src/01_ERC20/GoldToken.sol";
 
 contract BalanceOfTest is Test {
+    GoldToken goldToken;
+
+    function setUp() public {
+        goldToken = new GoldToken();
+    }
+
     function testAccountBalance() public {
-        TestableGoldToken goldToken = new TestableGoldToken();
+        address user = makeAddr("Bob");
+        uint256 testBalance = 100;
 
-        address user1 = makeAddr("Bob");
-        uint256 testBalance = 100 * 10 ** goldToken.decimals();
+        deal(address(goldToken), user, testBalance);
 
-        goldToken.mint(user1, testBalance);
+        assertEq(goldToken.balanceOf(user), testBalance);
+    }
 
-        assertEq(goldToken.balanceOf(user1), testBalance);
+    function testEmptyAccountBalance() public {
+        address user = makeAddr("Bob");
+        assertEq(goldToken.balanceOf(user), 0);
     }
 }

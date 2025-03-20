@@ -2,21 +2,22 @@
 pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
-import {TestableGoldToken} from "../../src/01_ERC20/TestableGoldToken.sol";
+import {GoldToken} from "../../src/01_ERC20/GoldToken.sol";
 
 contract TransferTest is Test {
-    TestableGoldToken goldToken;
+    GoldToken goldToken;
     address sender;
     address receiver;
+    event Transfer(address indexed from, address indexed to, uint256 value);
 
-    uint256 constant INIT_BALANCE = 100 * 10 ** 18;
-    uint256 constant TRANSFER_AMOUNT = 50 * 10 ** 18;
+    uint256 constant INIT_BALANCE = 100;
+    uint256 constant TRANSFER_AMOUNT = 50;
 
     function setUp() public {
-        goldToken = new TestableGoldToken();
+        goldToken = new GoldToken();
         sender = makeAddr("Bob");
         receiver = makeAddr("Alice");
-        goldToken.mint(sender, INIT_BALANCE);
+        deal(address(goldToken), sender, INIT_BALANCE);
     }
 
     function testTransfer() public {
@@ -35,15 +36,23 @@ contract TransferTest is Test {
         assertEq(goldToken.balanceOf(receiver), INIT_BALANCE);
     }
 
-     function testTransferToZeroAddress() public {
+    function testTransferToZeroAddress() public {
         vm.prank(sender);
-        vm.expectRevert();
+        vm.expectRevert("ERC20: transfer to the zero address");
         goldToken.transfer(address(0), TRANSFER_AMOUNT);
     }
 
     function testTransferMoreThanBalance() public {
         vm.prank(sender);
-        vm.expectRevert();
+        vm.expectRevert("ERC20: transfer amount exceeds balance");
         goldToken.transfer(receiver, INIT_BALANCE + 1);
+    }
+
+    function testEmitsTransferEvent() public {
+        vm.expectEmit(true, true, true, true);
+        emit Transfer(sender, receiver, TRANSFER_AMOUNT);
+
+        vm.prank(sender);
+        goldToken.transfer(receiver, TRANSFER_AMOUNT);
     }
 }
