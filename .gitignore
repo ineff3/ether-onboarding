@@ -1,0 +1,6 @@
+#Foundry
+dependencies
+out
+cache
+node_modules
+.env
