@@ -34,4 +34,16 @@ contract TransferTest is Test {
         assertEq(goldToken.balanceOf(sender), 0);
         assertEq(goldToken.balanceOf(receiver), INIT_BALANCE);
     }
+
+     function testTransferToZeroAddress() public {
+        vm.prank(sender);
+        vm.expectRevert();
+        goldToken.transfer(address(0), TRANSFER_AMOUNT);
+    }
+
+    function testTransferMoreThanBalance() public {
+        vm.prank(sender);
+        vm.expectRevert();
+        goldToken.transfer(receiver, INIT_BALANCE + 1);
+    }
 }
