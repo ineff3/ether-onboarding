@@ -47,7 +47,7 @@ contract SimpleVaultToken is ERC20, Ownable, ISimpleERC4626 {
 
         uint256 expectedShares = convertToShares(assets);
 
-        underlyingAsset.transferFrom(msg.sender, address(this), assets);
+        require(underlyingAsset.transferFrom(msg.sender, address(this), assets), "Transfer failed");
 
         _mint(receiver, expectedShares);
 
@@ -65,9 +65,13 @@ contract SimpleVaultToken is ERC20, Ownable, ISimpleERC4626 {
 
         require(balanceOf(owner) >= ownerShares, "Not enough SVT balance");
 
+        if (msg.sender != owner) {
+            _spendAllowance(owner, msg.sender, ownerShares);
+        }
+
         _burn(owner, ownerShares);
 
-        underlyingAsset.transfer(receiver, assets);
+        require(underlyingAsset.transfer(receiver, assets), "Transfer failed");
 
         emit Withdraw(msg.sender, receiver, owner, assets, ownerShares);
 

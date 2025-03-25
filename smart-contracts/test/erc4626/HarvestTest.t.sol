@@ -5,7 +5,6 @@ import {Test} from "forge-std/Test.sol";
 import {SimpleVaultToken} from "../../src/01_ERC20/SimpleVaultToken.sol";
 import {MockUSDC} from "../../src/common/MockUSDC.sol";
 
-
 contract HarvestTest is Test {
     SimpleVaultToken simpleVaultToken;
     MockUSDC mockUSDC;
@@ -60,7 +59,8 @@ contract HarvestTest is Test {
         simpleVaultToken.harvest(harvestAmount);
 
         uint256 expectedShares = (depositAmount * shares) / (depositAmount + harvestAmount);
-        assertEq(simpleVaultToken.convertToShares(depositAmount), expectedShares);
+        assertEq(simpleVaultToken.withdraw(depositAmount, address(this), address(this)), expectedShares);
+        assertEq(mockUSDC.balanceOf(address(this)), depositAmount);
     }
 
     function testHarvestEventEmission() public {
@@ -70,10 +70,7 @@ contract HarvestTest is Test {
         mockUSDC.approve(address(simpleVaultToken), harvestAmount);
 
         vm.expectEmit(true, false, false, true);
-        emit SimpleVaultToken.Harvest(
-            ownerAccount,
-            harvestAmount
-        );
+        emit SimpleVaultToken.Harvest(ownerAccount, harvestAmount);
 
         vm.prank(ownerAccount);
         simpleVaultToken.harvest(harvestAmount);

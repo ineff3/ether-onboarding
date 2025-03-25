@@ -4,13 +4,16 @@ pragma solidity ^0.8.20;
 import {Test} from "forge-std/Test.sol";
 import {SimpleVaultToken} from "../../src/01_ERC20/SimpleVaultToken.sol";
 import {MockUSDC} from "../../src/common/MockUSDC.sol";
+import {BadERC20} from "../../src/common/BadERC20.sol";
 
 contract DepositTest is Test {
     MockUSDC mockUSDC;
+    BadERC20 badERC20;
     SimpleVaultToken simpleVaultToken;
 
     function setUp() public {
         mockUSDC = new MockUSDC();
+        badERC20 = new BadERC20();
         simpleVaultToken = new SimpleVaultToken(address(mockUSDC));
     }
 
@@ -60,13 +63,20 @@ contract DepositTest is Test {
         uint256 expectedShares = simpleVaultToken.convertToShares(assets);
 
         vm.expectEmit(true, false, true, true);
-        emit SimpleVaultToken.Withdraw(
-            address(this),
-            address(this),
-            address(this),
-            assets,
-            expectedShares
-        );
+        emit SimpleVaultToken.Withdraw(address(this), address(this), address(this), assets, expectedShares);
+        simpleVaultToken.withdraw(assets, address(this), address(this));
+    }
+
+    function testWithFailedTransfer() public {
+        simpleVaultToken = new SimpleVaultToken(address(badERC20));
+
+        uint256 assets = 100;
+        deal(address(badERC20), address(this), assets);
+        badERC20.approve(address(simpleVaultToken), assets);
+        simpleVaultToken.deposit(assets, address(this));
+
+        badERC20.setForceFailTransfer(true);
+        vm.expectRevert("Transfer failed");
         simpleVaultToken.withdraw(assets, address(this), address(this));
     }
 }
