@@ -1,19 +1,16 @@
-import { useAccount, useBalance } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { Account } from './wallet/Account'
 import { ConnectWalletDialog } from './wallet/ConnectWalletDialog'
-import { sepolia } from 'viem/chains'
+import { WalletActionPanel } from './wallet/WalletActionPanel'
 
 export const MenuPanel = () => {
-  const { address, isConnected } = useAccount()
-
-  const result = useBalance({
-    address,
-    chainId: sepolia.id,
-  })
-  console.log(result.data)
+  const { isConnected } = useAccount()
 
   return (
-    <div className="flex w-full justify-end items-center p-5">
+    <div className="flex w-full items-center pt-5 pb-10">
+      <div className="flex grow">
+        <WalletActionPanel />
+      </div>
       {isConnected ? <Account /> : <ConnectWalletDialog />}
     </div>
   )
