@@ -36,7 +36,6 @@ contract ConvertToAssetsTest is Test {
         vm.prank(user);
         uint256 share2 = simpleVaultToken.deposit(asset2, user);
 
-
         uint256 totalAssets = asset1 + asset2;
         uint256 totalShares = share1 + share2;
         uint256 expectedShares = (share1 * totalAssets) / totalShares;

@@ -6,6 +6,16 @@ import "@openzeppelin-contracts/access/Ownable.sol";
 import "./interfaces/ISimpleERC4626.sol";
 
 contract SimpleVaultToken is ERC20, Ownable, ISimpleERC4626 {
+    event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares);
+    event Withdraw(
+        address indexed sender,
+        address indexed receiver,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
+    );
+    event Harvest(address indexed sender, uint256 amount);
+
     IERC20 public immutable underlyingAsset;
 
     error ZeroInputAmount();
@@ -15,11 +25,11 @@ contract SimpleVaultToken is ERC20, Ownable, ISimpleERC4626 {
         underlyingAsset = IERC20(_underlyingAsset);
     }
 
-    function asset() external view returns (address) {
+    function asset() external view override returns (address) {
         return address(underlyingAsset);
     }
 
-    function convertToShares(uint256 assets) public view returns (uint256 shares) {
+    function convertToShares(uint256 assets) public view override returns (uint256 shares) {
         uint256 totalAssets = underlyingAsset.balanceOf(address(this));
         uint256 totalShares = totalSupply();
 
@@ -30,24 +40,24 @@ contract SimpleVaultToken is ERC20, Ownable, ISimpleERC4626 {
         return (assets * totalShares) / totalAssets;
     }
 
-    function deposit(uint256 assets, address receiver) external returns (uint256 shares) {
-        if (assets <= 0) {
+    function deposit(uint256 assets, address receiver) external override returns (uint256 shares) {
+        if (assets == 0) {
             revert ZeroInputAmount();
         }
 
-        require(underlyingAsset.allowance(msg.sender, address(this)) >= assets, "Insufficient allowance");
+        uint256 expectedShares = convertToShares(assets);
 
         underlyingAsset.transferFrom(msg.sender, address(this), assets);
 
-        uint256 expectedShares = convertToShares(assets);
-
         _mint(receiver, expectedShares);
+
+        emit Deposit(msg.sender, receiver, assets, expectedShares);
 
         return expectedShares;
     }
 
-    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares) {
-        if (assets <= 0) {
+    function withdraw(uint256 assets, address receiver, address owner) external override returns (uint256 shares) {
+        if (assets == 0) {
             revert ZeroInputAmount();
         }
 
@@ -59,10 +69,12 @@ contract SimpleVaultToken is ERC20, Ownable, ISimpleERC4626 {
 
         underlyingAsset.transfer(receiver, assets);
 
+        emit Withdraw(msg.sender, receiver, owner, assets, ownerShares);
+
         return ownerShares;
     }
 
-    function convertToAssets(uint256 shares) external view returns (uint256 assets) {
+    function convertToAssets(uint256 shares) external view override returns (uint256 assets) {
         uint256 totalAssets = underlyingAsset.balanceOf(address(this));
         uint256 totalShares = totalSupply();
 
@@ -73,10 +85,12 @@ contract SimpleVaultToken is ERC20, Ownable, ISimpleERC4626 {
         return (shares * totalAssets) / totalShares;
     }
 
-    function harvest(uint256 amount) external onlyOwner {
+    function harvest(uint256 amount) external override onlyOwner {
         if (amount <= 0) {
             revert ZeroInputAmount();
         }
         underlyingAsset.transferFrom(msg.sender, address(this), amount);
+
+        emit Harvest(msg.sender, amount);
     }
 }

@@ -29,7 +29,7 @@ contract DepositTest is Test {
         uint256 share2 = simpleVaultToken.deposit(asset2, user);
 
         assertEq(share1, asset1);
-        assertEq(share2, (asset2 * share1) / (asset1 + asset2));
+        assertEq(share2, (asset2 * (share1 + share2)) / (asset1 + asset2));
         assertEq(simpleVaultToken.totalSupply(), share1 + share2);
         assertEq(simpleVaultToken.balanceOf(address(this)), share1);
         assertEq(simpleVaultToken.balanceOf(user), share2);
@@ -65,11 +65,14 @@ contract DepositTest is Test {
         simpleVaultToken.deposit(0, address(this));
     }
 
-    function testWithInsufficientAllowance() public {
-        uint256 asset1 = 100;
-        deal(address(mockUSDC), address(this), asset1);
+    function testDepositEventEmission() public {
+        uint256 assets = 100;
+        deal(address(mockUSDC), address(this), assets);
+        mockUSDC.approve(address(simpleVaultToken), assets);
 
-        vm.expectRevert("Insufficient allowance");
-        simpleVaultToken.deposit(asset1, address(this));
+        uint256 expectedShares = simpleVaultToken.convertToShares(assets);
+        vm.expectEmit(true, true, false, true);
+        emit SimpleVaultToken.Deposit(address(this), address(this), assets, expectedShares);
+        simpleVaultToken.deposit(assets, address(this));
     }
 }

@@ -50,4 +50,23 @@ contract DepositTest is Test {
         vm.expectRevert("Not enough SVT balance");
         simpleVaultToken.withdraw(100, address(this), address(this));
     }
+
+    function testWithdrawEventEmission() public {
+        uint256 assets = 100;
+        deal(address(mockUSDC), address(this), assets);
+        mockUSDC.approve(address(simpleVaultToken), assets);
+        simpleVaultToken.deposit(assets, address(this));
+
+        uint256 expectedShares = simpleVaultToken.convertToShares(assets);
+
+        vm.expectEmit(true, false, true, true);
+        emit SimpleVaultToken.Withdraw(
+            address(this),
+            address(this),
+            address(this),
+            assets,
+            expectedShares
+        );
+        simpleVaultToken.withdraw(assets, address(this), address(this));
+    }
 }
