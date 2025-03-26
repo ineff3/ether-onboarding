@@ -3,7 +3,7 @@ import { IconProps } from './Icon'
 export const GoldIcon = ({ size }: IconProps) => {
   return (
     <svg
-      className="border-2 border-primary/20 rounded-full p-2"
+      className="border-2 border-primary/15 rounded-full p-2 bg-background"
       width={size}
       height={size}
       xmlns="http://www.w3.org/2000/svg"

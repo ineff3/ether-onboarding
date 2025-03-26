@@ -15,11 +15,17 @@ interface FormType {
 }
 
 export const DepositDialog = () => {
+  const [open, setOpen] = useState(false)
   const { selectedToken } = useTokenContext()!
   const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
   const approve = useApprove(selectedToken.address)
   const deposit = useDeposit(selectedToken)
-  const { register, handleSubmit, watch } = useForm<FormType>({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { isValid, isDirty },
+  } = useForm<FormType>({
     defaultValues: {
       amount: '',
     },
@@ -38,13 +44,17 @@ export const DepositDialog = () => {
         console.log(error)
       },
       onSuccess: () => {
-        deposit(amount)
+        deposit(amount, {
+          onSuccess: () => {
+            setOpen(false)
+          },
+        })
       },
     })
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button disabled={!selectedToken.underlyingAssetTitle}>Deposit</Button>
       </DialogTrigger>
@@ -67,7 +77,12 @@ export const DepositDialog = () => {
             />
           </div>
           <TransactionOverview amount={amount} />
-          <Button type="submit" className="mt-20" size="lg">
+          <Button
+            disabled={!(isDirty && isValid && !isNaN(amount as number))}
+            type="submit"
+            className="mt-20"
+            size="lg"
+          >
             Convert
           </Button>
         </form>

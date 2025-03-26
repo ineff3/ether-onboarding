@@ -8,7 +8,7 @@ export const useDeposit = (tokenPreview: TokenPreview) => {
   const baseContract = getBasedContract(tokenPreview)
   const { writeContract } = useWriteContract()
 
-  const deposit = (assets: number) => {
+  const deposit = (assets: number, options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
     const underlyingAssetAddress = getTokenPreviewByTitle(tokenPreview.underlyingAssetTitle!).address
     if (!underlyingAssetAddress) {
       return
@@ -20,11 +20,7 @@ export const useDeposit = (tokenPreview: TokenPreview) => {
         functionName: 'deposit',
         args: [assets, account],
       },
-      {
-        onError: (err) => {
-          console.log(err)
-        },
-      },
+      options,
     )
   }
 
