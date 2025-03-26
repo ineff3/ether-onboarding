@@ -1,3 +1,12 @@
-export const Spinner = () => {
-  return <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+interface Props {
+  size?: number
+}
+
+export const Spinner = ({ size = 16 }: Props) => {
+  return (
+    <div
+      className="border-2 border-gray-300 border-t-primary rounded-full animate-spin"
+      style={{ width: size, height: size }}
+    />
+  )
 }

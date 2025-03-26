@@ -1,26 +1,33 @@
 import { useTokenContext } from '@/contexts/TokenContext'
 import { getBasedContract } from '@/utils/getBaseContract'
-import { useReadContract } from 'wagmi'
+import { useReadContracts } from 'wagmi'
 import { Spinner } from '../custom/Spinner'
+import { BaseUnitNumber } from '@sparkdotfi/common-universal'
 
 interface Props {
   amount: number | ''
 }
 
-export const TransactionOverview = ({ amount }: Props) => {
+export const DepositTransactionOverview = ({ amount }: Props) => {
   const { selectedToken } = useTokenContext()!
   const baseContract = getBasedContract(selectedToken)
 
-  const { data, isFetching } = useReadContract({
-    ...baseContract,
-    functionName: 'convertToShares',
-    args: [amount],
+  const { data, isFetching, isLoading } = useReadContracts({
+    contracts: [
+      {
+        ...baseContract,
+        functionName: 'convertToShares',
+        args: [amount],
+      },
+      { ...baseContract, functionName: 'decimals' },
+    ],
     query: {
       enabled: !!amount,
     },
   })
-
-  const parsedData = data && parseInt(data as string)
+  const shares = data?.[0]?.result as string
+  const decimals = data?.[1]?.result as number
+  const convertedShares = data && BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(shares), decimals).toFixed(8)
 
   return (
     <div>
@@ -29,7 +36,7 @@ export const TransactionOverview = ({ amount }: Props) => {
         <div className="grow">
           <div className="font-bold">Estimated Shares</div>
           <div className="text-lg flex gap-2 items-center">
-            {isFetching ? <Spinner /> : ((parsedData as string) ?? '0')} <span>{selectedToken.title}</span>
+            {isFetching || isLoading ? <Spinner /> : (convertedShares ?? '0')} <span>{selectedToken.title}</span>
           </div>
         </div>
         <selectedToken.Icon size={50} />

@@ -2,28 +2,31 @@ import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Input } from '../ui/input'
-import { useDeposit } from '@/hooks/useDeposit'
 import { useTokenContext } from '@/contexts/TokenContext'
-import { useApprove } from '@/hooks/useApprove'
 import { getTokenPreviewByTitle } from '@/utils/getTokenPreviewByTitle'
 import { TokenTitle } from '@/types'
-import { useState } from 'react'
-import { DepositTransactionOverview } from './DepositTransactionOverview'
+import { useEffect, useState } from 'react'
+import { useWithdraw } from '@/hooks/useWithdraw'
+import { WithdrawTransactionOverview } from './WithdrawTransactionOverview'
+import { Spinner } from '../custom/Spinner'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface FormType {
   amount: number | ''
 }
 
-export const DepositDialog = () => {
+export const WithdrawDialog = () => {
   const [open, setOpen] = useState(false)
+  const queryClient = useQueryClient()
   const { selectedToken } = useTokenContext()!
   const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
-  const approve = useApprove(selectedToken.address)
-  const deposit = useDeposit(selectedToken)
+  const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
+  const { withdraw, isPending, isTxLoading, isTxFinished } = useWithdraw()
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { isValid, isDirty },
   } = useForm<FormType>({
     defaultValues: {
@@ -32,23 +35,21 @@ export const DepositDialog = () => {
   })
   const amount = watch('amount')
 
-  const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
+  useEffect(() => {
+    if (isTxFinished) {
+      setOpen(false)
+      queryClient.invalidateQueries({ queryKey: ['readContracts'], exact: false })
+      reset()
+    }
+  }, [isTxFinished, queryClient, reset])
 
   const onSubmit: SubmitHandler<FormType> = ({ amount }) => {
     if (!amount) {
       return
     }
-
-    approve(underlyingTokenPreview, amount, {
-      onError: (error) => {
-        console.log(error)
-      },
-      onSuccess: () => {
-        deposit(amount, {
-          onSuccess: () => {
-            setOpen(false)
-          },
-        })
+    withdraw(selectedToken, amount, {
+      onError: (err) => {
+        console.log(err)
       },
     })
   }
@@ -56,16 +57,18 @@ export const DepositDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={!selectedToken.underlyingAssetTitle}>Deposit</Button>
+        <Button variant="outline" disabled={!selectedToken.underlyingAssetTitle}>
+          Withdraw
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Deposit to get SVT</DialogTitle>
+          <DialogTitle>Withdraw to get {underlyingAssetTitle}</DialogTitle>
         </DialogHeader>
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex gap-5 items-center">
             <div className="shrink-0">
-              <underlyingTokenPreview.Icon size={40} />
+              <selectedToken.Icon size={40} />
             </div>
             <Input
               type="number"
@@ -76,14 +79,15 @@ export const DepositDialog = () => {
               })}
             />
           </div>
-          <DepositTransactionOverview amount={amount} />
+          <WithdrawTransactionOverview amount={amount} underlyingAssetPreview={underlyingTokenPreview} />
           <Button
             disabled={!(isDirty && isValid && !isNaN(amount as number))}
             type="submit"
             className="mt-20"
             size="lg"
           >
-            Convert
+            {(isPending || isTxLoading) && <Spinner />}
+            <span>Convert</span>
           </Button>
         </form>
       </DialogContent>
