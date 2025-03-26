@@ -11,11 +11,12 @@ export const TokenTab = forwardRef<HTMLButtonElement, Props>(({ tokenPreview, cl
     <button
       ref={ref}
       className={cn(
-        'w-[180px] max-h-[100px] flex flex-col gap-2 border  data-[state=active]:border-primary',
+        'w-[180px] max-h-[100px] flex flex-col gap-2 border  data-[state=active]:border-primary bg-secondary/50',
         className,
       )}
       {...props}
     >
+      {tokenPreview.icon}
       <p>{tokenPreview.title}</p>
     </button>
   )
