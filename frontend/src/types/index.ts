@@ -1,8 +1,12 @@
-import { Abi } from 'viem'
+import { supportedTokens } from '@/tokens'
+import { Abi, Address } from 'viem'
+
+export type TokenTitle = keyof typeof supportedTokens
 
 export type TokenPreview = {
-  address: string
+  address: Address
   abi: Abi
-  title: string
+  title: TokenTitle
   icon: JSX.Element
+  underlyingAssetTitle?: TokenTitle
 }

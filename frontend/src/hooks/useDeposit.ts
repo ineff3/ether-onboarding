@@ -1,17 +1,31 @@
 import { TokenPreview } from '@/types'
 import { getBasedContract } from '@/utils/getBaseContract'
-import { useWriteContract } from 'wagmi'
+import { getTokenPreviewByTitle } from '@/utils/getTokenPreviewByTitle'
+import { useAccount, useWriteContract } from 'wagmi'
 
-export const useDeposit = (tokenPreview: TokenPreview, assets: number, underlyingAsset: string) => {
+export const useDeposit = (tokenPreview: TokenPreview) => {
+  const { address: account } = useAccount()
   const baseContract = getBasedContract(tokenPreview)
   const { writeContract } = useWriteContract()
 
-  const deposit = () => {
-    writeContract({
-      ...baseContract,
-      functionName: 'deposit',
-      args: [assets, underlyingAsset],
-    })
+  const deposit = (assets: number) => {
+    const underlyingAssetAddress = getTokenPreviewByTitle(tokenPreview.underlyingAssetTitle!).address
+    if (!underlyingAssetAddress) {
+      return
+    }
+
+    writeContract(
+      {
+        ...baseContract,
+        functionName: 'deposit',
+        args: [assets, account],
+      },
+      {
+        onError: (err) => {
+          console.log(err)
+        },
+      },
+    )
   }
 
   return deposit
