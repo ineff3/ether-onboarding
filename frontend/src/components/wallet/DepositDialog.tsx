@@ -19,11 +19,12 @@ export const DepositDialog = () => {
   const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
   const approve = useApprove(selectedToken.address)
   const deposit = useDeposit(selectedToken)
-  const { register, handleSubmit } = useForm<FormType>({
+  const { register, handleSubmit, watch } = useForm<FormType>({
     defaultValues: {
       amount: '',
     },
   })
+  const amount = watch('amount')
 
   const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
 
@@ -63,7 +64,7 @@ export const DepositDialog = () => {
               })}
             />
           </div>
-          <TransactionOverview />
+          <TransactionOverview amount={amount} />
           <Button type="submit" className="mt-20" size="lg">
             Convert
           </Button>
