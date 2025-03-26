@@ -7,8 +7,10 @@ import { useTokenContext } from '@/contexts/TokenContext'
 import { useApprove } from '@/hooks/useApprove'
 import { getTokenPreviewByTitle } from '@/utils/getTokenPreviewByTitle'
 import { TokenTitle } from '@/types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DepositTransactionOverview } from './DepositTransactionOverview'
+import { Spinner } from '../custom/Spinner'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface FormType {
   amount: number | ''
@@ -17,20 +19,30 @@ interface FormType {
 export const DepositDialog = () => {
   const [open, setOpen] = useState(false)
   const { selectedToken } = useTokenContext()!
+  const queryClient = useQueryClient()
   const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
   const approve = useApprove(selectedToken.address)
-  const deposit = useDeposit(selectedToken)
+  const { deposit, isPending, isTxFinished, isTxLoading } = useDeposit(selectedToken)
   const {
     register,
     handleSubmit,
     watch,
     formState: { isValid, isDirty },
+    reset,
   } = useForm<FormType>({
     defaultValues: {
       amount: '',
     },
   })
   const amount = watch('amount')
+
+  useEffect(() => {
+    if (isTxFinished) {
+      setOpen(false)
+      queryClient.invalidateQueries({ queryKey: ['readContracts'], exact: false })
+      reset()
+    }
+  }, [isTxFinished, queryClient, reset])
 
   const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
 
@@ -45,8 +57,8 @@ export const DepositDialog = () => {
       },
       onSuccess: () => {
         deposit(amount, {
-          onSuccess: () => {
-            setOpen(false)
+          onError: (err) => {
+            console.log(err)
           },
         })
       },
@@ -83,7 +95,8 @@ export const DepositDialog = () => {
             className="mt-20"
             size="lg"
           >
-            Convert
+            {(isPending || isTxLoading) && <Spinner />}
+            <span>Convert</span>
           </Button>
         </form>
       </DialogContent>

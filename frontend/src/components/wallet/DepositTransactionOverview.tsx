@@ -1,8 +1,8 @@
 import { useTokenContext } from '@/contexts/TokenContext'
 import { getBasedContract } from '@/utils/getBaseContract'
 import { useReadContracts } from 'wagmi'
-import { Spinner } from '../custom/Spinner'
 import { BaseUnitNumber } from '@sparkdotfi/common-universal'
+import { keepPreviousData } from '@tanstack/react-query'
 
 interface Props {
   amount: number | ''
@@ -12,7 +12,7 @@ export const DepositTransactionOverview = ({ amount }: Props) => {
   const { selectedToken } = useTokenContext()!
   const baseContract = getBasedContract(selectedToken)
 
-  const { data, isFetching, isLoading } = useReadContracts({
+  const { data } = useReadContracts({
     contracts: [
       {
         ...baseContract,
@@ -23,11 +23,14 @@ export const DepositTransactionOverview = ({ amount }: Props) => {
     ],
     query: {
       enabled: !!amount,
+      placeholderData: keepPreviousData,
     },
   })
   const shares = data?.[0]?.result as string
   const decimals = data?.[1]?.result as number
   const convertedShares = data && BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(shares), decimals).toFixed(8)
+
+  const isAmountValid = amount !== '' && amount !== 0 && !isNaN(amount)
 
   return (
     <div>
@@ -36,7 +39,8 @@ export const DepositTransactionOverview = ({ amount }: Props) => {
         <div className="grow">
           <div className="font-bold">Estimated Shares</div>
           <div className="text-lg flex gap-2 items-center">
-            {isFetching || isLoading ? <Spinner /> : (convertedShares ?? '0')} <span>{selectedToken.title}</span>
+            {isAmountValid ? (convertedShares ?? '-') : '-'}
+            <span>{selectedToken.title}</span>
           </div>
         </div>
         <selectedToken.Icon size={50} />
