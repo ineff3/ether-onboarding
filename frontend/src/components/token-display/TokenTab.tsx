@@ -16,7 +16,7 @@ export const TokenTab = forwardRef<HTMLButtonElement, Props>(({ tokenPreview, cl
       )}
       {...props}
     >
-      {tokenPreview.icon}
+      <tokenPreview.Icon size={50} />
       <p>{tokenPreview.title}</p>
     </button>
   )

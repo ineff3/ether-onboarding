@@ -54,7 +54,9 @@ export const DepositDialog = () => {
         </DialogHeader>
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex gap-5 items-center">
-            <div className="shrink-0">{underlyingTokenPreview.icon}</div>
+            <div className="shrink-0">
+              <underlyingTokenPreview.Icon size={40} />
+            </div>
             <Input
               type="number"
               placeholder="0"

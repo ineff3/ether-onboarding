@@ -32,7 +32,7 @@ export const TransactionOverview = ({ amount }: Props) => {
             {isFetching ? <Spinner /> : ((parsedData as string) ?? '0')} <span>{selectedToken.title}</span>
           </div>
         </div>
-        <div>{selectedToken.icon}</div>
+        <selectedToken.Icon size={50} />
       </div>
     </div>
   )

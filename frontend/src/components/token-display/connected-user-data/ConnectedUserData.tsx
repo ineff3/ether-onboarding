@@ -5,7 +5,7 @@ export const ConnectedUserData = () => {
   const { selectedToken } = useTokenContext()!
   return (
     <div className="flex gap-3 items-center">
-      {selectedToken.icon}
+      <selectedToken.Icon size={80} />
       <UserBalance />
     </div>
   )
