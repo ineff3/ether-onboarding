@@ -4,6 +4,7 @@ import { Button } from '../ui/button'
 
 export const WalletActionPanel = () => {
   const { isConnected } = useAccount()
+
   return (
     <Container>
       <div className="flex items-center justify-center gap-20">

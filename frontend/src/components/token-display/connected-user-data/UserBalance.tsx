@@ -1,15 +1,12 @@
-import { TokenPreview } from '@/types'
+import { useTokenContext } from '@/contexts/TokenContext'
 import { getBasedContract } from '@/utils/getBaseContract'
 import { useAccount, useReadContract } from 'wagmi'
 
-interface Props {
-  tokenPreview: TokenPreview
-}
-
-export const UserBalance = ({ tokenPreview }: Props) => {
+export const UserBalance = () => {
+  const { selectedToken } = useTokenContext()!
   const { address: account } = useAccount()
 
-  const baseContract = getBasedContract(tokenPreview)
+  const baseContract = getBasedContract(selectedToken)
   const { data, isLoading } = useReadContract({
     ...baseContract,
     functionName: 'balanceOf',

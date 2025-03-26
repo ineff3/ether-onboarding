@@ -1,17 +1,14 @@
 import { cn } from '@/lib/utils'
-import { TokenPreview } from '@/types'
 import { forwardRef } from 'react'
 import { useAccount, useReadContracts } from 'wagmi'
 import { ConnectedUserData } from './connected-user-data/ConnectedUserData'
 import { getBasedContract } from '@/utils/getBaseContract'
+import { useTokenContext } from '@/contexts/TokenContext'
 
-interface Props extends React.ComponentProps<'div'> {
-  tokenPreview: TokenPreview
-}
-
-export const TokenContent = forwardRef<HTMLDivElement, Props>(({ tokenPreview, className, ...props }: Props, ref) => {
+export const TokenContent = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(({ className, ...props }, ref) => {
+  const { selectedToken } = useTokenContext()!
   const { isConnected } = useAccount()
-  const baseContract = getBasedContract(tokenPreview)
+  const baseContract = getBasedContract(selectedToken)
   const { data } = useReadContracts({
     contracts: [
       {
@@ -58,7 +55,7 @@ export const TokenContent = forwardRef<HTMLDivElement, Props>(({ tokenPreview, c
               </p>
             </div>
           </div>
-          {isConnected && <ConnectedUserData tokenPreview={tokenPreview} />}
+          {isConnected && <ConnectedUserData />}
         </div>
       )}
     </div>

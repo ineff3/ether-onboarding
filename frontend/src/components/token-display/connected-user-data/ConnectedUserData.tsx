@@ -1,15 +1,12 @@
-import { TokenPreview } from '@/types'
 import { UserBalance } from './UserBalance'
+import { useTokenContext } from '@/contexts/TokenContext'
 
-interface Props {
-  tokenPreview: TokenPreview
-}
-
-export const ConnectedUserData = ({ tokenPreview }: Props) => {
+export const ConnectedUserData = () => {
+  const { selectedToken } = useTokenContext()!
   return (
     <div className="flex gap-3 items-center">
-      {tokenPreview.icon}
-      <UserBalance tokenPreview={tokenPreview} />
+      {selectedToken.icon}
+      <UserBalance />
     </div>
   )
 }
