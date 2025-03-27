@@ -8,7 +8,7 @@ export const useApprove = (spender: Address) => {
 
   const approve = (
     underlyingTokenPreview: TokenPreview,
-    amount: number,
+    amount: bigint,
     options?: { onSuccess?: () => void; onError?: (error: Error) => void },
   ) => {
     const baseContract = getBasedContract(underlyingTokenPreview)

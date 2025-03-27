@@ -5,7 +5,7 @@ import { BaseUnitNumber } from '@sparkdotfi/common-universal'
 import { keepPreviousData } from '@tanstack/react-query'
 
 interface Props {
-  amount: number | ''
+  amount: bigint
 }
 
 export const DepositTransactionOverview = ({ amount }: Props) => {
@@ -26,11 +26,9 @@ export const DepositTransactionOverview = ({ amount }: Props) => {
       placeholderData: keepPreviousData,
     },
   })
-  const shares = data?.[0]?.result as string
-  const decimals = data?.[1]?.result as number
-  const convertedShares = data && BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(shares), decimals).toFixed(8)
-
-  const isAmountValid = amount !== '' && amount !== 0 && !isNaN(amount)
+  const shares = data?.[0]?.result
+  const decimals = data?.[1]?.result
+  const convertedShares = data && BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(shares!), decimals!).toFixed(8)
 
   return (
     <div>
@@ -39,7 +37,7 @@ export const DepositTransactionOverview = ({ amount }: Props) => {
         <div className="grow">
           <div className="font-bold">Estimated Shares</div>
           <div className="text-lg flex gap-2 items-center">
-            {isAmountValid ? (convertedShares ?? '-') : '-'}
+            {amount ? convertedShares : '-'}
             <span>{selectedToken.title}</span>
           </div>
         </div>

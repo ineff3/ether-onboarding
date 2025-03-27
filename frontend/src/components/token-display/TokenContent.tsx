@@ -35,17 +35,17 @@ export const TokenContent = forwardRef<HTMLDivElement, React.ComponentProps<'div
     ],
   })
 
-  const name = data?.[0]?.result as string
-  const symbol = data?.[1]?.result as string
-  const totalSupply = data?.[2]?.result as string
-  const asset = data?.[3]?.result as string
-  const decimals = data?.[4]?.result as number
+  const name = data?.[0]?.result
+  const symbol = data?.[1]?.result
+  const totalSupply = data?.[2]?.result
+  const asset = data?.[3]?.result
+  const decimals = data?.[4]?.result
 
   if (isLoading) {
     return null
   }
 
-  const convertedTotalSupply = BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(totalSupply), decimals).toFixed(3)
+  const convertedTotalSupply = BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(totalSupply!), decimals!).toFixed(3)
 
   return (
     <div ref={ref} className={cn('rounded-lg bg-secondary text-card-foreground shadow-sm p-5', className)} {...props}>

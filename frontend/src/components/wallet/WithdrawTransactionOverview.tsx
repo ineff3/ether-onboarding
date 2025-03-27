@@ -6,7 +6,7 @@ import { BaseUnitNumber } from '@sparkdotfi/common-universal'
 import { keepPreviousData } from '@tanstack/react-query'
 
 interface Props {
-  amount: number | ''
+  amount: bigint
   underlyingAssetPreview: TokenPreview
 }
 
@@ -29,11 +29,9 @@ export const WithdrawTransactionOverview = ({ amount, underlyingAssetPreview }: 
     },
   })
 
-  const assets = data?.[0]?.result as string
-  const decimals = data?.[1]?.result as number
-  const convertedAssets = data && BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(assets), decimals).toFixed(8)
-
-  const isAmountValid = amount !== '' && amount !== 0 && !isNaN(amount)
+  const assets = data?.[0]?.result
+  const decimals = data?.[1]?.result
+  const convertedAssets = data && BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(assets!), decimals!).toFixed(8)
 
   return (
     <div>
@@ -42,8 +40,8 @@ export const WithdrawTransactionOverview = ({ amount, underlyingAssetPreview }: 
         <div className="grow">
           <div className="font-bold">Outcome</div>
           <div className="text-lg flex gap-2 items-center">
-            {isAmountValid ? (convertedAssets ?? '-') : '-'}
-            <span>{underlyingAssetPreview.title}</span>
+            {amount ? convertedAssets : '-'}
+            <span>{selectedToken.title}</span>
           </div>
         </div>
         <underlyingAssetPreview.Icon size={50} />

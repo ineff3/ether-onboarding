@@ -12,11 +12,11 @@ export const useWithdraw = () => {
 
   const withdraw = (
     tokenPreview: TokenPreview,
-    amount: number,
+    amount: bigint,
     options?: { onSuccess?: () => void; onError?: (error: Error) => void },
   ) => {
     const baseContract = getBasedContract(tokenPreview)
-    writeContract({ ...baseContract, functionName: 'withdraw', args: [amount, account, account] }, options)
+    writeContract({ ...baseContract, functionName: 'withdraw', args: [amount, account!, account!] }, options)
   }
 
   return { withdraw, isPending, isTxLoading, isTxFinished }
