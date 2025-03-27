@@ -16,7 +16,7 @@ export const TokenDisplay = () => {
       orientation="vertical"
       value={selectedToken.title}
       onValueChange={onTabChange}
-      className="flex flex-row gap-10 h-[500px]"
+      className="flex flex-row gap-10 h-[280px]"
     >
       <TabsList className="w-fit flex flex-col gap-5 h-full justify-start bg-background p-0">
         {tokenPreviews.map((tokenPreview) => (
