@@ -23,6 +23,7 @@ export const TokenEventsPanel = () => {
       console.log('New logs!', logs)
     },
   })
+  console.log(events)
 
   return (
     <Container>

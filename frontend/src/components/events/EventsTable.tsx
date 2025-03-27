@@ -14,14 +14,15 @@ export const EventsTable = ({ events }: Props) => {
         <TableRow>
           <TableHead className="w-[100px]">Block</TableHead>
           <TableHead className="w-[180px]">Transaction Hash</TableHead>
-          <TableHead>Log</TableHead>
+          <TableHead>Event Name</TableHead>
+          <TableHead>Arguments</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {events.map((event) => (
-          <TableRow className="py-5" key={event.logIndex}>
-            <TableCell className="font-medium py-5">{event.blockNumber?.toString()}</TableCell>
-            <TableCell className="py-5">
+          <TableRow key={event.logIndex}>
+            <TableCell className="font-medium py-5 align-top">{event.blockNumber?.toString()}</TableCell>
+            <TableCell className="py-5 align-top">
               <a
                 target="_blank"
                 href={`https://sepolia.etherscan.io/tx/${event.transactionHash}`}
@@ -29,6 +30,9 @@ export const EventsTable = ({ events }: Props) => {
               >
                 {shortenText(event.transactionHash!, 12, 0)}
               </a>
+            </TableCell>
+            <TableCell className="py-5 align-top">
+              {'eventName' in event ? (event.eventName as string) : null}
             </TableCell>
             <TableCell className="py-5">
               <TableLog event={event} />
