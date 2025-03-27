@@ -1,29 +1,28 @@
-import { useAccount, useWatchContractEvent } from 'wagmi'
+import { useWatchContractEvent } from 'wagmi'
 import { Container } from '../custom/Container'
 import { useTokenContext } from '@/contexts/TokenContext'
 import { getBasedContract } from '@/utils/getBaseContract'
 import { EventsTable } from './EventsTable'
 import { useGetHistoryEvents } from '@/hooks/useGetHistoryEvents'
 import { Logs } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import { EVENTS_QUERY_KEY } from '@/queryKeyStore'
 
 const LOGS_LIMIT = 10
 
 export const TokenEventsPanel = () => {
   const { selectedToken } = useTokenContext()!
-  const { address: account } = useAccount()
+  const queryClient = useQueryClient()
   const baseContract = getBasedContract(selectedToken)
-  const { events, isLoading, isError } = useGetHistoryEvents(selectedToken, LOGS_LIMIT)
+  const { data: events, isLoading, isError } = useGetHistoryEvents(selectedToken, LOGS_LIMIT)
 
   useWatchContractEvent({
     ...baseContract,
-    args: {
-      to: account,
-    },
-    onLogs: (logs) => {
-      console.log('New logs!', logs)
+    onLogs: () => {
+      console.log('FIRES')
+      queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY, exact: false })
     },
   })
-  console.log(events)
 
   return (
     <Container>
@@ -37,7 +36,7 @@ export const TokenEventsPanel = () => {
         ) : isError ? (
           <p>Unable to fetch latest events</p>
         ) : (
-          <EventsTable events={events} />
+          events && <EventsTable events={events} />
         )}
       </div>
     </Container>

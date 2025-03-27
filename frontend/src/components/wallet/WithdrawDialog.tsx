@@ -49,11 +49,7 @@ export const WithdrawDialog = () => {
     if (!convertedAmount) {
       return
     }
-    withdraw(selectedToken, convertedAmount, {
-      onError: (err) => {
-        console.log(err)
-      },
-    })
+    withdraw(selectedToken, convertedAmount)
   }
 
   return (

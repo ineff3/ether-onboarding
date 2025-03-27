@@ -54,15 +54,8 @@ export const DepositDialog = () => {
     }
 
     approve(underlyingTokenPreview, convertedAmount, {
-      onError: (error) => {
-        console.log(error)
-      },
       onSuccess: () => {
-        deposit(convertedAmount, {
-          onError: (err) => {
-            console.log(err)
-          },
-        })
+        deposit(convertedAmount)
       },
     })
   }

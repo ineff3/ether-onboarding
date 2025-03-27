@@ -1,44 +1,34 @@
+import { EVENTS_QUERY_KEY } from '@/queryKeyStore'
 import { TokenPreview } from '@/types'
 import { wagmiConfig } from '@/wagmi.config'
+import { useQuery } from '@tanstack/react-query'
 import { getPublicClient } from '@wagmi/core'
 import { sepolia } from '@wagmi/core/chains'
-import { useEffect, useState } from 'react'
 import { Log } from 'viem'
 
 export const useGetHistoryEvents = (selectedToken: TokenPreview, limit: number) => {
-  const [events, setEvents] = useState<Log[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [isError, setIsError] = useState<Error | null>(null)
+  const publicClient = getPublicClient(wagmiConfig, { chainId: sepolia.id })
 
-  useEffect(() => {
-    const getHistoryLogs = async () => {
-      setIsLoading(true)
-      try {
-        const publicClient = getPublicClient(wagmiConfig, { chainId: sepolia.id })
+  const { data: latestBlock } = useQuery({ queryKey: ['latestBlock'], queryFn: () => publicClient.getBlockNumber() })
 
-        const latestBlock = await publicClient.getBlockNumber()
-        const fromBlockLimit = latestBlock - 10000n
-        const fromBlock = fromBlockLimit > 0n ? fromBlockLimit : 'earliest'
+  const queryData = useQuery<Log[]>({
+    queryKey: [EVENTS_QUERY_KEY, { limit, tokenTitle: selectedToken.title }],
+    queryFn: () => {
+      const fromBlockLimit = latestBlock! - 10000n
+      const fromBlock = fromBlockLimit > 0n ? fromBlockLimit : 'earliest'
 
-        const events = await publicClient.getContractEvents({
-          address: selectedToken.address,
-          abi: selectedToken.abi,
-          fromBlock,
-          toBlock: latestBlock,
-        })
+      return publicClient.getContractEvents({
+        address: selectedToken.address,
+        abi: selectedToken.abi,
+        fromBlock,
+        toBlock: latestBlock,
+      })
+    },
+    enabled: !!latestBlock,
+    select: (data) => {
+      return data.slice(-limit).reverse()
+    },
+  })
 
-        const latestLogs = events.slice(-limit).reverse()
-        setEvents(latestLogs)
-      } catch (err) {
-        setIsError(err as Error)
-        console.log(err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    getHistoryLogs()
-  }, [selectedToken, limit])
-
-  return { events, isLoading, isError }
+  return queryData
 }
