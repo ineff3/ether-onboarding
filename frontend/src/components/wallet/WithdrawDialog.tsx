@@ -10,6 +10,7 @@ import { useWithdraw } from '@/hooks/useWithdraw'
 import { WithdrawTransactionOverview } from './WithdrawTransactionOverview'
 import { Spinner } from '../custom/Spinner'
 import { useQueryClient } from '@tanstack/react-query'
+import { NormalizedUnitNumber } from '@sparkdotfi/common-universal'
 
 interface FormType {
   amount: number | ''
@@ -34,6 +35,7 @@ export const WithdrawDialog = () => {
     },
   })
   const amount = watch('amount')
+  const convertedAmount = amount && NormalizedUnitNumber.toBaseUnit(NormalizedUnitNumber(amount), 18).toNumber()
 
   useEffect(() => {
     if (isTxFinished) {
@@ -43,11 +45,11 @@ export const WithdrawDialog = () => {
     }
   }, [isTxFinished, queryClient, reset])
 
-  const onSubmit: SubmitHandler<FormType> = ({ amount }) => {
-    if (!amount) {
+  const onSubmit: SubmitHandler<FormType> = () => {
+    if (!convertedAmount) {
       return
     }
-    withdraw(selectedToken, amount, {
+    withdraw(selectedToken, convertedAmount, {
       onError: (err) => {
         console.log(err)
       },
@@ -79,9 +81,9 @@ export const WithdrawDialog = () => {
               })}
             />
           </div>
-          <WithdrawTransactionOverview amount={amount} underlyingAssetPreview={underlyingTokenPreview} />
+          <WithdrawTransactionOverview amount={convertedAmount} underlyingAssetPreview={underlyingTokenPreview} />
           <Button
-            disabled={!(isDirty && isValid && !isNaN(amount as number))}
+            disabled={!(isDirty && isValid && !isNaN(convertedAmount as number))}
             type="submit"
             className="mt-20"
             size="lg"

@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 import { DepositTransactionOverview } from './DepositTransactionOverview'
 import { Spinner } from '../custom/Spinner'
 import { useQueryClient } from '@tanstack/react-query'
+import { NormalizedUnitNumber } from '@sparkdotfi/common-universal'
 
 interface FormType {
   amount: number | ''
@@ -35,6 +36,7 @@ export const DepositDialog = () => {
     },
   })
   const amount = watch('amount')
+  const convertedAmount = amount && NormalizedUnitNumber.toBaseUnit(NormalizedUnitNumber(amount), 18).toNumber()
 
   useEffect(() => {
     if (isTxFinished) {
@@ -46,17 +48,17 @@ export const DepositDialog = () => {
 
   const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
 
-  const onSubmit: SubmitHandler<FormType> = ({ amount }) => {
-    if (!amount) {
+  const onSubmit: SubmitHandler<FormType> = () => {
+    if (!convertedAmount) {
       return
     }
 
-    approve(underlyingTokenPreview, amount, {
+    approve(underlyingTokenPreview, convertedAmount, {
       onError: (error) => {
         console.log(error)
       },
       onSuccess: () => {
-        deposit(amount, {
+        deposit(convertedAmount, {
           onError: (err) => {
             console.log(err)
           },
@@ -80,6 +82,7 @@ export const DepositDialog = () => {
               <underlyingTokenPreview.Icon size={40} />
             </div>
             <Input
+              step="any"
               type="number"
               placeholder="0"
               {...register('amount', {
@@ -88,9 +91,9 @@ export const DepositDialog = () => {
               })}
             />
           </div>
-          <DepositTransactionOverview amount={amount} />
+          <DepositTransactionOverview amount={convertedAmount} />
           <Button
-            disabled={!(isDirty && isValid && !isNaN(amount as number))}
+            disabled={!(isDirty && isValid && !isNaN(convertedAmount as number))}
             type="submit"
             className="mt-20"
             size="lg"
