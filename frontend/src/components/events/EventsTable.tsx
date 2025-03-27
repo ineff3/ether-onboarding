@@ -12,6 +12,7 @@ export const EventsTable = ({ events }: Props) => {
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead className="w-[50px]">№</TableHead>
           <TableHead className="w-[100px]">Block</TableHead>
           <TableHead className="w-[180px]">Transaction Hash</TableHead>
           <TableHead>Event Name</TableHead>
@@ -19,8 +20,9 @@ export const EventsTable = ({ events }: Props) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {events.map((event) => (
+        {events.map((event, index) => (
           <TableRow key={event.logIndex}>
+            <TableCell className="py-5 align-top">{index + 1}</TableCell>
             <TableCell className="font-medium py-5 align-top">{event.blockNumber?.toString()}</TableCell>
             <TableCell className="py-5 align-top">
               <a
