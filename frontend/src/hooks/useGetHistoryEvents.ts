@@ -9,7 +9,10 @@ import { Log } from 'viem'
 export const useGetHistoryEvents = (selectedToken: TokenPreview, limit: number) => {
   const publicClient = getPublicClient(wagmiConfig, { chainId: sepolia.id })
 
-  const { data: latestBlock } = useQuery({ queryKey: ['latestBlock'], queryFn: () => publicClient.getBlockNumber() })
+  const { data: latestBlock } = useQuery({
+    queryKey: ['latestBlock', { tokenTitle: selectedToken.title }],
+    queryFn: () => publicClient.getBlockNumber(),
+  })
 
   const queryData = useQuery<Log[]>({
     queryKey: [EVENTS_QUERY_KEY, { limit, tokenTitle: selectedToken.title }],

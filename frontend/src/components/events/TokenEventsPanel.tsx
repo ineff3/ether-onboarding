@@ -19,8 +19,7 @@ export const TokenEventsPanel = () => {
   useWatchContractEvent({
     ...baseContract,
     onLogs: () => {
-      console.log('FIRES')
-      queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY, exact: false })
+      queryClient.invalidateQueries({ queryKey: [EVENTS_QUERY_KEY], exact: false, type: 'active' })
     },
   })
 

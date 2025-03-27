@@ -21,7 +21,7 @@ export const EventsTable = ({ events }: Props) => {
       </TableHeader>
       <TableBody>
         {events.map((event, index) => (
-          <TableRow key={event.logIndex}>
+          <TableRow key={`${event.blockNumber}/${event.logIndex}`}>
             <TableCell className="py-5 align-top">{index + 1}</TableCell>
             <TableCell className="font-medium py-5 align-top">{event.blockNumber?.toString()}</TableCell>
             <TableCell className="py-5 align-top">

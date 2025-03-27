@@ -69,6 +69,7 @@ export const WithdrawDialog = () => {
               <selectedToken.Icon size={40} />
             </div>
             <Input
+              step="any"
               type="number"
               placeholder="0"
               {...register('amount', {
