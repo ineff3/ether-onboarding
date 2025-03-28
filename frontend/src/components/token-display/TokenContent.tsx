@@ -7,7 +7,7 @@ import { useTokenContext } from '@/contexts/TokenContext'
 import { BaseUnitNumber } from '@sparkdotfi/common-universal'
 
 export const TokenContent = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(({ className, ...props }, ref) => {
-  const { selectedToken } = useTokenContext()!
+  const { selectedToken } = useTokenContext()
   const { isConnected } = useAccount()
   const baseContract = getBasedContract(selectedToken)
   const { data, isLoading } = useReadContracts({

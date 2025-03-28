@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const WithdrawTransactionOverview = ({ amount, underlyingAssetPreview }: Props) => {
-  const { selectedToken } = useTokenContext()!
+  const { selectedToken } = useTokenContext()
   const baseContract = getBasedContract(selectedToken)
 
   const { data } = useReadContracts({

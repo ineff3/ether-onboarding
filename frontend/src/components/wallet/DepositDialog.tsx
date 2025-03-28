@@ -19,7 +19,7 @@ interface FormType {
 
 export const DepositDialog = () => {
   const [open, setOpen] = useState(false)
-  const { selectedToken } = useTokenContext()!
+  const { selectedToken } = useTokenContext()
   const queryClient = useQueryClient()
   const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
   const approve = useApprove(selectedToken.address)

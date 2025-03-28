@@ -2,6 +2,7 @@
 import { tokenPreviews } from '@/tokens'
 import { TokenPreview } from '@/types'
 import { createContext, ReactNode, useContext, useState } from 'react'
+import { assert } from '@sparkdotfi/common-universal'
 
 interface TokenContextProps {
   selectedToken: TokenPreview
@@ -10,7 +11,8 @@ interface TokenContextProps {
 
 const TokenContext = createContext<TokenContextProps | null>(null)
 
-export const useTokenContext = () => {
+export const useTokenContext: () => TokenContextProps = () => {
+  assert(!TokenContext, 'Context is not initialized')
   return useContext(TokenContext)
 }
 

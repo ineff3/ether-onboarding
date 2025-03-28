@@ -10,7 +10,7 @@ import { useQueryClient } from '@tanstack/react-query'
 const LOGS_LIMIT = 10
 
 export const TokenEventsPanel = () => {
-  const { selectedToken } = useTokenContext()!
+  const { selectedToken } = useTokenContext()
   const queryClient = useQueryClient()
   const baseContract = getBasedContract(selectedToken)
   const { data: events, isLoading, isError } = useGetHistoryEvents(selectedToken, LOGS_LIMIT)

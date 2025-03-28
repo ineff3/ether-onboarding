@@ -10,7 +10,7 @@ export const UserBalance = () => {
   const baseContract = getBasedContract(selectedToken)
   const { data, isLoading } = useReadContracts({
     contracts: [
-      { ...baseContract, functionName: 'balanceOf', args: [account] },
+      { ...baseContract, functionName: 'balanceOf', args: [account!] },
       { ...baseContract, functionName: 'decimals' },
     ],
   })
@@ -18,9 +18,9 @@ export const UserBalance = () => {
   if (isLoading) {
     return null
   }
-  const balance = data?.[0]?.result as string
-  const decimals = data?.[1]?.result as number
-  const convertedBalance = BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(balance), decimals).toFixed(8)
+  const balance = data?.[0]?.result
+  const decimals = data?.[1]?.result
+  const convertedBalance = BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(balance!), decimals!).toFixed(8)
 
   return <div className="text-6xl">{convertedBalance}</div>
 }

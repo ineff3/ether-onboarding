@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const DepositTransactionOverview = ({ amount }: Props) => {
-  const { selectedToken } = useTokenContext()!
+  const { selectedToken } = useTokenContext()
   const baseContract = getBasedContract(selectedToken)
 
   const { data } = useReadContracts({

@@ -5,7 +5,7 @@ import { tokenPreviews } from '@/tokens'
 import { useTokenContext } from '@/contexts/TokenContext'
 
 export const TokenDisplay = () => {
-  const { selectedToken, setSelectedToken } = useTokenContext()!
+  const { selectedToken, setSelectedToken } = useTokenContext()
 
   const onTabChange = (title: string) => {
     setSelectedToken(tokenPreviews.find((tokenPreview) => tokenPreview.title === title)!)

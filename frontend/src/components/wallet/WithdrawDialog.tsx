@@ -19,7 +19,7 @@ interface FormType {
 export const WithdrawDialog = () => {
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
-  const { selectedToken } = useTokenContext()!
+  const { selectedToken } = useTokenContext()
   const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
   const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
   const { withdraw, isPending, isTxLoading, isTxFinished } = useWithdraw()
