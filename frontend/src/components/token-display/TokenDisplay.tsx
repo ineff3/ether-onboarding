@@ -3,13 +3,19 @@ import { TokenTab } from './TokenTab'
 import { TokenContent } from './TokenContent'
 import { tokenPreviews } from '@/tokens'
 import { useTokenContext } from '@/contexts/TokenContext'
+import { SupportedToken } from '@/types'
 
 export const TokenDisplay = () => {
   const { selectedToken, setSelectedToken } = useTokenContext()
 
   const onTabChange = (title: string) => {
-    setSelectedToken(tokenPreviews.find((tokenPreview) => tokenPreview.title === title)!)
+    if (!(title in tokenPreviews)) {
+      return
+    }
+    setSelectedToken(tokenPreviews[title as SupportedToken])
   }
+
+  const tokens = Object.values(tokenPreviews)
 
   return (
     <Tabs
@@ -19,13 +25,13 @@ export const TokenDisplay = () => {
       className="flex flex-row gap-10 h-[280px]"
     >
       <TabsList className="w-fit flex flex-col gap-5 h-full justify-start bg-background p-0">
-        {tokenPreviews.map((tokenPreview) => (
+        {tokens.map((tokenPreview) => (
           <TabsTrigger className="" asChild key={tokenPreview.title} value={tokenPreview.title}>
             <TokenTab tokenPreview={tokenPreview} />
           </TabsTrigger>
         ))}
       </TabsList>
-      {tokenPreviews.map((tokenPreview) => (
+      {tokens.map((tokenPreview) => (
         <TabsContent key={tokenPreview.title} value={tokenPreview.title}>
           <TokenContent />
         </TabsContent>

@@ -3,14 +3,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Input } from '../ui/input'
 import { useTokenContext } from '@/contexts/TokenContext'
-import { getTokenPreviewByTitle } from '@/utils/getTokenPreviewByTitle'
-import { TokenTitle } from '@/types'
 import { useEffect, useState } from 'react'
 import { useWithdraw } from '@/hooks/useWithdraw'
 import { WithdrawTransactionOverview } from './WithdrawTransactionOverview'
 import { Spinner } from '../custom/Spinner'
 import { useQueryClient } from '@tanstack/react-query'
 import { parseTokenInput } from '@/utils/parseTokenInput'
+import { SupportedToken } from '@/types'
+import { tokenPreviews } from '@/tokens'
 
 interface FormType {
   amount: number | ''
@@ -20,8 +20,8 @@ export const WithdrawDialog = () => {
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
   const { selectedToken } = useTokenContext()
-  const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
-  const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
+  const [underlyingAssetTitle] = useState<SupportedToken>(selectedToken.underlyingAssetTitle!)
+  const underlyingTokenPreview = tokenPreviews[underlyingAssetTitle]
   const { withdraw, isPending, isTxLoading, isTxFinished } = useWithdraw()
   const {
     register,

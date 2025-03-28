@@ -1,6 +1,6 @@
+import { tokenPreviews } from '@/tokens'
 import { TokenPreview } from '@/types'
 import { getBasedContract } from '@/utils/getBaseContract'
-import { getTokenPreviewByTitle } from '@/utils/getTokenPreviewByTitle'
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 export const useDeposit = (tokenPreview: TokenPreview) => {
@@ -13,7 +13,7 @@ export const useDeposit = (tokenPreview: TokenPreview) => {
   })
 
   const deposit = (assets: bigint, options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
-    const underlyingAssetAddress = getTokenPreviewByTitle(tokenPreview.underlyingAssetTitle!).address
+    const underlyingAssetAddress = tokenPreviews[tokenPreview.underlyingAssetTitle!].address
     if (!underlyingAssetAddress) {
       return
     }

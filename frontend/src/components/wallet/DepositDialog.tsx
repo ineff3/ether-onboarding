@@ -5,13 +5,13 @@ import { Input } from '../ui/input'
 import { useDeposit } from '@/hooks/useDeposit'
 import { useTokenContext } from '@/contexts/TokenContext'
 import { useApprove } from '@/hooks/useApprove'
-import { getTokenPreviewByTitle } from '@/utils/getTokenPreviewByTitle'
-import { TokenTitle } from '@/types'
 import { useEffect, useState } from 'react'
 import { DepositTransactionOverview } from './DepositTransactionOverview'
 import { Spinner } from '../custom/Spinner'
 import { useQueryClient } from '@tanstack/react-query'
 import { parseTokenInput } from '@/utils/parseTokenInput'
+import { SupportedToken } from '@/types'
+import { tokenPreviews } from '@/tokens'
 
 interface FormType {
   amount: number | ''
@@ -21,7 +21,7 @@ export const DepositDialog = () => {
   const [open, setOpen] = useState(false)
   const { selectedToken } = useTokenContext()
   const queryClient = useQueryClient()
-  const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
+  const [underlyingAssetTitle] = useState<SupportedToken>(selectedToken.underlyingAssetTitle!)
   const {
     approve,
     isTxLoading: isApproveTxLoading,
@@ -50,7 +50,7 @@ export const DepositDialog = () => {
     }
   }, [isApproveTxFinished, isDepositTxFinished, queryClient, reset])
 
-  const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
+  const underlyingTokenPreview = tokenPreviews[underlyingAssetTitle]
 
   const onSubmit: SubmitHandler<FormType> = () => {
     if (!convertedAmount) {

@@ -18,6 +18,6 @@ export const useTokenContext = () => {
 }
 
 export const TokenProvider = ({ children }: { children: ReactNode }) => {
-  const [selectedToken, setSelectedToken] = useState<TokenPreview>(tokenPreviews[0])
+  const [selectedToken, setSelectedToken] = useState<TokenPreview>(Object.values(tokenPreviews)[0])
   return <TokenContext.Provider value={{ selectedToken, setSelectedToken }}>{children}</TokenContext.Provider>
 }
