@@ -11,9 +11,10 @@ interface TokenContextProps {
 
 const TokenContext = createContext<TokenContextProps | null>(null)
 
-export const useTokenContext: () => TokenContextProps = () => {
-  assert(!TokenContext, 'Context is not initialized')
-  return useContext(TokenContext)
+export const useTokenContext = () => {
+  const tokenContextProps = useContext(TokenContext)
+  assert(tokenContextProps, 'Context is not initialized')
+  return tokenContextProps
 }
 
 export const TokenProvider = ({ children }: { children: ReactNode }) => {
