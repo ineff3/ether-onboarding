@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { parseTokenInput } from '@/utils/parseTokenInput'
 import { SupportedToken } from '@/types'
 import { tokenPreviews } from '@/tokens'
+import { useAccount } from 'wagmi'
 
 interface FormType {
   amount: number | ''
@@ -18,6 +19,7 @@ interface FormType {
 
 export const WithdrawDialog = () => {
   const [open, setOpen] = useState(false)
+  const { address: account } = useAccount()
   const queryClient = useQueryClient()
   const { selectedToken } = useTokenContext()
   const [underlyingAssetTitle] = useState<SupportedToken>(selectedToken.underlyingAssetTitle!)
@@ -55,7 +57,7 @@ export const WithdrawDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" disabled={!selectedToken.underlyingAssetTitle}>
+        <Button variant="outline" disabled={!selectedToken.underlyingAssetTitle || !account}>
           Withdraw
         </Button>
       </DialogTrigger>

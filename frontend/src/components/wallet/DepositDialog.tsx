@@ -12,6 +12,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { parseTokenInput } from '@/utils/parseTokenInput'
 import { SupportedToken } from '@/types'
 import { tokenPreviews } from '@/tokens'
+import { useAccount } from 'wagmi'
 
 interface FormType {
   amount: number | ''
@@ -19,6 +20,7 @@ interface FormType {
 
 export const DepositDialog = () => {
   const [open, setOpen] = useState(false)
+  const { address: account } = useAccount()
   const { selectedToken } = useTokenContext()
   const queryClient = useQueryClient()
   const [underlyingAssetTitle] = useState<SupportedToken>(selectedToken.underlyingAssetTitle!)
@@ -67,7 +69,7 @@ export const DepositDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={!selectedToken.underlyingAssetTitle}>Deposit</Button>
+        <Button disabled={!selectedToken.underlyingAssetTitle || !account}>Deposit</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
