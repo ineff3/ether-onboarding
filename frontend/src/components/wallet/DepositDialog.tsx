@@ -22,8 +22,12 @@ export const DepositDialog = () => {
   const { selectedToken } = useTokenContext()
   const queryClient = useQueryClient()
   const [underlyingAssetTitle] = useState<TokenTitle>(selectedToken.underlyingAssetTitle!)
-  const approve = useApprove(selectedToken.address)
-  const { deposit, isPending, isTxFinished, isTxLoading } = useDeposit(selectedToken)
+  const {
+    approve,
+    isTxLoading: isApproveTxLoading,
+    isTxFinished: isApproveTxFinished,
+  } = useApprove(selectedToken.address)
+  const { deposit, isTxLoading: isDepositTxLoading, isTxFinished: isDepositTxFinished } = useDeposit(selectedToken)
   const {
     register,
     handleSubmit,
@@ -39,12 +43,12 @@ export const DepositDialog = () => {
   const convertedAmount = parseTokenInput(amount)
 
   useEffect(() => {
-    if (isTxFinished) {
+    if (isApproveTxFinished && isDepositTxFinished) {
       setOpen(false)
       queryClient.invalidateQueries({ queryKey: ['readContracts'], exact: false })
       reset()
     }
-  }, [isTxFinished, queryClient, reset])
+  }, [isApproveTxFinished, isDepositTxFinished, queryClient, reset])
 
   const underlyingTokenPreview = getTokenPreviewByTitle(underlyingAssetTitle)
 
@@ -86,7 +90,7 @@ export const DepositDialog = () => {
           </div>
           <DepositTransactionOverview amount={convertedAmount} />
           <Button disabled={!(isDirty && isValid)} type="submit" className="mt-20" size="lg">
-            {(isPending || isTxLoading) && <Spinner />}
+            {(isApproveTxLoading || isDepositTxLoading) && <Spinner />}
             <span>Convert</span>
           </Button>
         </form>

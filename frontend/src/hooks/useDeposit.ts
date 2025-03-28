@@ -6,7 +6,7 @@ import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagm
 export const useDeposit = (tokenPreview: TokenPreview) => {
   const { address: account } = useAccount()
   const baseContract = getBasedContract(tokenPreview)
-  const { writeContract, isPending, data } = useWriteContract()
+  const { writeContract, data } = useWriteContract()
 
   const { isLoading: isTxLoading, isSuccess: isTxFinished } = useWaitForTransactionReceipt({
     hash: data,
@@ -28,5 +28,5 @@ export const useDeposit = (tokenPreview: TokenPreview) => {
     )
   }
 
-  return { deposit, isPending, isTxLoading, isTxFinished }
+  return { deposit, isTxLoading, isTxFinished }
 }
