@@ -5,6 +5,7 @@ import { ConnectedUserData } from './connected-user-data/ConnectedUserData'
 import { getBasedContract } from '@/utils/getBaseContract'
 import { useTokenContext } from '@/contexts/TokenContext'
 import { BaseUnitNumber } from '@sparkdotfi/common-universal'
+import { UnderlyingAssetBalance } from './UnderlyingAssetBalance'
 
 export const TokenContent = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(({ className, ...props }, ref) => {
   const { selectedToken } = useTokenContext()
@@ -46,6 +47,7 @@ export const TokenContent = forwardRef<HTMLDivElement, React.ComponentProps<'div
   }
 
   const convertedTotalSupply = BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(totalSupply!), decimals!).toFixed(3)
+  const { underlyingAssetTitle } = selectedToken
 
   return (
     <div ref={ref} className={cn('rounded-lg bg-secondary text-card-foreground shadow-sm p-5', className)} {...props}>
@@ -54,10 +56,18 @@ export const TokenContent = forwardRef<HTMLDivElement, React.ComponentProps<'div
           <div className="flex items-center">
             <div className="flex-grow">
               <h2 className="text-2xl font-semibold tracking-tight">{name}</h2>
-              {asset && (
-                <p className="text-sm text-muted-foreground">
-                  Underlying asset: <span>{asset}</span>
-                </p>
+              {underlyingAssetTitle && (
+                <div className="mt-2">
+                  <p>Underlying asset</p>
+                  <div className="text-sm text-muted-foreground flex">
+                    <p className="w-[60px]">address:</p> <p>{asset}</p>
+                  </div>
+                  <UnderlyingAssetBalance
+                    underlyingAssetTitle={underlyingAssetTitle}
+                    selectedAssetAddress={selectedToken.address}
+                    decimals={decimals!}
+                  />
+                </div>
               )}
             </div>
             <div className="flex flex-col items-center bg-primary text-primary-foreground text-sm p-3 rounded-lg">
