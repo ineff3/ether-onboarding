@@ -6,7 +6,6 @@ import { EventsTable } from './EventsTable'
 import { useGetHistoryEvents } from '@/hooks/useGetHistoryEvents'
 import { Logs } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
-import { EVENTS_QUERY_KEY } from '@/queryKeyStore'
 
 const LOGS_LIMIT = 10
 
@@ -19,7 +18,7 @@ export const TokenEventsPanel = () => {
   useWatchContractEvent({
     ...baseContract,
     onLogs: () => {
-      queryClient.invalidateQueries({ queryKey: [EVENTS_QUERY_KEY], exact: false, type: 'active' })
+      queryClient.invalidateQueries({ queryKey: ['blockNumber'], exact: false })
     },
   })
 

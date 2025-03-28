@@ -5,17 +5,15 @@ import { useQuery } from '@tanstack/react-query'
 import { getPublicClient } from '@wagmi/core'
 import { sepolia } from '@wagmi/core/chains'
 import { Log } from 'viem'
+import { useBlockNumber } from 'wagmi'
 
 export const useGetHistoryEvents = (selectedToken: TokenPreview, limit: number) => {
   const publicClient = getPublicClient(wagmiConfig, { chainId: sepolia.id })
 
-  const { data: latestBlock } = useQuery({
-    queryKey: ['latestBlock', { tokenTitle: selectedToken.title }],
-    queryFn: () => publicClient.getBlockNumber(),
-  })
+  const { data: latestBlock } = useBlockNumber()
 
   const queryData = useQuery<Log[]>({
-    queryKey: [EVENTS_QUERY_KEY, { limit, tokenTitle: selectedToken.title }],
+    queryKey: [EVENTS_QUERY_KEY, { limit, tokenTitle: selectedToken.title, latestBlock: latestBlock?.toString() }],
     queryFn: () => {
       const fromBlockLimit = latestBlock! - 10000n
       const fromBlock = fromBlockLimit > 0n ? fromBlockLimit : 'earliest'
