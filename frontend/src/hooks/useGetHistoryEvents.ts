@@ -15,13 +15,10 @@ export const useGetHistoryEvents = (selectedToken: TokenPreview, limit: number) 
   const queryData = useQuery<Log[]>({
     queryKey: [EVENTS_QUERY_KEY, { limit, tokenTitle: selectedToken.title, latestBlock: latestBlock?.toString() }],
     queryFn: () => {
-      const fromBlockLimit = latestBlock! - 10000n
-      const fromBlock = fromBlockLimit > 0n ? fromBlockLimit : 'earliest'
-
       return publicClient.getContractEvents({
         address: selectedToken.address,
         abi: selectedToken.abi,
-        fromBlock,
+        fromBlock: selectedToken.contractDeploymentBlock,
         toBlock: latestBlock,
       })
     },

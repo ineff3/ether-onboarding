@@ -11,6 +11,7 @@ export type GenericABI = typeof svtABI | typeof gldABI
 
 export type TokenPreview = {
   address: Address
+  contractDeploymentBlock: bigint
   abi: GenericABI
   title: TokenTitle
   Icon: ComponentType<IconProps>

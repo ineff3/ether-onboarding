@@ -13,6 +13,7 @@ export const tokenPreviews: TokenPreview[] = [
   {
     title: 'SVT',
     address: import.meta.env.VITE_SIMPLE_VAULT_TOKEN_ADDRESS,
+    contractDeploymentBlock: 7979668n,
     abi: svtABI,
     Icon: TokenIcon,
     underlyingAssetTitle: 'GLD',
@@ -20,6 +21,7 @@ export const tokenPreviews: TokenPreview[] = [
   {
     title: 'GLD',
     address: import.meta.env.VITE_GOLD_TOKEN_ADDRESS,
+    contractDeploymentBlock: 7979668n,
     abi: gldABI,
     Icon: GoldIcon,
   },
