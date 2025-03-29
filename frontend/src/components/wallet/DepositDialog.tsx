@@ -1,22 +1,16 @@
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Input } from '../ui/input'
-import { useDeposit } from '@/hooks/useDeposit'
 import { useTokenContext } from '@/contexts/TokenContext'
-import { useApprove } from '@/hooks/useApprove'
-import { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { DepositTransactionOverview } from './DepositTransactionOverview'
-import { Spinner } from '../custom/Spinner'
 import { useQueryClient } from '@tanstack/react-query'
 import { parseTokenInput } from '@/utils/parseTokenInput'
-import { SupportedToken } from '@/types'
+import { DepositFormType, SupportedToken } from '@/types'
 import { tokenPreviews } from '@/tokens'
 import { useAccount } from 'wagmi'
-
-interface FormType {
-  amount: number | ''
-}
+import { DepositActions } from './DepositActions'
 
 export const DepositDialog = () => {
   const [open, setOpen] = useState(false)
@@ -25,18 +19,11 @@ export const DepositDialog = () => {
   const queryClient = useQueryClient()
   const [underlyingAssetTitle] = useState<SupportedToken>(selectedToken.underlyingAssetTitle!)
   const {
-    approve,
-    isTxLoading: isApproveTxLoading,
-    isTxFinished: isApproveTxFinished,
-  } = useApprove(selectedToken.address)
-  const { deposit, isTxLoading: isDepositTxLoading, isTxFinished: isDepositTxFinished } = useDeposit(selectedToken)
-  const {
     register,
-    handleSubmit,
     watch,
     formState: { isValid, isDirty },
     reset,
-  } = useForm<FormType>({
+  } = useForm<DepositFormType>({
     defaultValues: {
       amount: '',
     },
@@ -44,27 +31,15 @@ export const DepositDialog = () => {
   const amount = watch('amount')
   const convertedAmount = parseTokenInput(amount)
 
-  useEffect(() => {
-    if (isApproveTxFinished && isDepositTxFinished) {
-      setOpen(false)
-      queryClient.invalidateQueries({ queryKey: ['readContracts'], exact: false })
-      reset()
-    }
-  }, [isApproveTxFinished, isDepositTxFinished, queryClient, reset])
+  const onDepositFinished = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['readContracts'] })
+    setOpen(false)
+    reset()
+  }, [setOpen, reset, queryClient])
 
   const underlyingTokenPreview = tokenPreviews[underlyingAssetTitle]
 
-  const onSubmit: SubmitHandler<FormType> = () => {
-    if (!convertedAmount) {
-      return
-    }
-
-    approve(underlyingTokenPreview, convertedAmount, {
-      onSuccess: () => {
-        deposit(convertedAmount)
-      },
-    })
-  }
+  const isFormInvalid = !(isDirty && isValid)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -75,7 +50,7 @@ export const DepositDialog = () => {
         <DialogHeader>
           <DialogTitle>Deposit to get SVT</DialogTitle>
         </DialogHeader>
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+        <form className="flex flex-col gap-5">
           <div className="flex gap-5 items-center">
             <div className="shrink-0">
               <underlyingTokenPreview.Icon size={40} />
@@ -91,10 +66,11 @@ export const DepositDialog = () => {
             />
           </div>
           <DepositTransactionOverview amount={convertedAmount} />
-          <Button disabled={!(isDirty && isValid)} type="submit" className="mt-20" size="lg">
-            {(isApproveTxLoading || isDepositTxLoading) && <Spinner />}
-            <span>Convert</span>
-          </Button>
+          <DepositActions
+            convertedAmount={convertedAmount}
+            isFormInvalid={isFormInvalid}
+            onDepositFinished={onDepositFinished}
+          />
         </form>
       </DialogContent>
     </Dialog>

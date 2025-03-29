@@ -6,8 +6,15 @@ import { WagmiProvider } from 'wagmi'
 import { wagmiConfig } from './wagmi.config.ts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { hashFn } from 'wagmi/query'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      queryKeyHashFn: hashFn,
+    },
+  },
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

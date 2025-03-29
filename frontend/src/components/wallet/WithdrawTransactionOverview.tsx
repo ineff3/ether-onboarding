@@ -41,7 +41,7 @@ export const WithdrawTransactionOverview = ({ amount, underlyingAssetPreview }: 
           <div className="font-bold">Outcome</div>
           <div className="text-lg flex gap-2 items-center">
             {amount ? convertedAssets : '-'}
-            <span>{selectedToken.title}</span>
+            <span>{underlyingAssetPreview.title}</span>
           </div>
         </div>
         <underlyingAssetPreview.Icon size={50} />

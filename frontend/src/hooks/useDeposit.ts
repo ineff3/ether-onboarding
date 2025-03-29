@@ -12,20 +12,17 @@ export const useDeposit = (tokenPreview: TokenPreview) => {
     hash: data,
   })
 
-  const deposit = (assets: bigint, options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
+  const deposit = (assets: bigint) => {
     const underlyingAssetAddress = tokenPreviews[tokenPreview.underlyingAssetTitle!].address
     if (!underlyingAssetAddress) {
       return
     }
 
-    writeContract(
-      {
-        ...baseContract,
-        functionName: 'deposit',
-        args: [assets, account!],
-      },
-      options,
-    )
+    writeContract({
+      ...baseContract,
+      functionName: 'deposit',
+      args: [assets, account!],
+    })
   }
 
   return { deposit, isTxLoading, isTxFinished }

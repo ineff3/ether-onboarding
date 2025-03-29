@@ -24,7 +24,7 @@ export const WithdrawDialog = () => {
   const { selectedToken } = useTokenContext()
   const [underlyingAssetTitle] = useState<SupportedToken>(selectedToken.underlyingAssetTitle!)
   const underlyingTokenPreview = tokenPreviews[underlyingAssetTitle]
-  const { withdraw, isPending, isTxLoading, isTxFinished } = useWithdraw()
+  const { withdraw, isTxLoading, isTxFinished } = useWithdraw()
   const {
     register,
     handleSubmit,
@@ -81,8 +81,8 @@ export const WithdrawDialog = () => {
             />
           </div>
           <WithdrawTransactionOverview amount={convertedAmount} underlyingAssetPreview={underlyingTokenPreview} />
-          <Button disabled={!(isDirty && isValid)} type="submit" className="mt-20" size="lg">
-            {(isPending || isTxLoading) && <Spinner />}
+          <Button disabled={!(isDirty && isValid) || isTxLoading} type="submit" className="mt-20" size="lg">
+            {isTxLoading && <Spinner />}
             <span>Convert</span>
           </Button>
         </form>

@@ -16,3 +16,7 @@ export type TokenPreview = {
   Icon: ComponentType<IconProps>
   underlyingAssetTitle?: SupportedToken
 }
+
+export interface DepositFormType {
+  amount: number | ''
+}

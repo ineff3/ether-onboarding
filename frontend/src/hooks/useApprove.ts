@@ -10,13 +10,9 @@ export const useApprove = (spender: Address) => {
     hash: data,
   })
 
-  const approve = (
-    underlyingTokenPreview: TokenPreview,
-    amount: bigint,
-    options?: { onSuccess?: () => void; onError?: (error: Error) => void },
-  ) => {
+  const approve = (underlyingTokenPreview: TokenPreview, amount: bigint) => {
     const baseContract = getBasedContract(underlyingTokenPreview)
-    writeContract({ ...baseContract, functionName: 'approve', args: [spender, amount] }, options)
+    writeContract({ ...baseContract, functionName: 'approve', args: [spender, amount] })
   }
 
   return { approve, isTxLoading, isTxFinished }

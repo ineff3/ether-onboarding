@@ -6,6 +6,7 @@ import { getBasedContract } from '@/utils/getBaseContract'
 import { useTokenContext } from '@/contexts/TokenContext'
 import { BaseUnitNumber } from '@sparkdotfi/common-universal'
 import { UnderlyingAssetBalance } from './UnderlyingAssetBalance'
+import { verifyContractData } from '@/utils/verifyContractData'
 
 export const TokenContent = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(({ className, ...props }, ref) => {
   const { selectedToken } = useTokenContext()
@@ -36,18 +37,21 @@ export const TokenContent = forwardRef<HTMLDivElement, React.ComponentProps<'div
     ],
   })
 
+  if (isLoading || !data) {
+    return null
+  }
+  const { underlyingAssetTitle } = selectedToken
+  if (underlyingAssetTitle && !verifyContractData(data)) {
+    return <div>Error happened</div>
+  }
+
   const name = data?.[0]?.result
   const symbol = data?.[1]?.result
   const totalSupply = data?.[2]?.result
   const asset = data?.[3]?.result
   const decimals = data?.[4]?.result
 
-  if (isLoading) {
-    return null
-  }
-
   const convertedTotalSupply = BaseUnitNumber.toNormalizedUnit(BaseUnitNumber(totalSupply!), decimals!).toFixed(3)
-  const { underlyingAssetTitle } = selectedToken
 
   return (
     <div ref={ref} className={cn('rounded-lg bg-secondary text-card-foreground shadow-sm p-5', className)} {...props}>

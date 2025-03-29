@@ -4,7 +4,7 @@ import { useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagm
 
 export const useWithdraw = () => {
   const { address: account } = useAccount()
-  const { writeContract, isPending, data } = useWriteContract()
+  const { writeContract, data } = useWriteContract()
 
   const { isLoading: isTxLoading, isSuccess: isTxFinished } = useWaitForTransactionReceipt({
     hash: data,
@@ -19,5 +19,5 @@ export const useWithdraw = () => {
     writeContract({ ...baseContract, functionName: 'withdraw', args: [amount, account!, account!] }, options)
   }
 
-  return { withdraw, isPending, isTxLoading, isTxFinished }
+  return { withdraw, isTxLoading, isTxFinished }
 }

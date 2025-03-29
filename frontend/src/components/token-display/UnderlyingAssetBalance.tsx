@@ -4,6 +4,7 @@ import { getBasedContract } from '@/utils/getBaseContract'
 import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 import { BaseUnitNumber } from '@sparkdotfi/common-universal'
+import { verifyContractData } from '@/utils/verifyContractData'
 
 interface Props {
   selectedAssetAddress: Address
@@ -14,7 +15,7 @@ interface Props {
 export const UnderlyingAssetBalance = ({ underlyingAssetTitle, selectedAssetAddress, decimals }: Props) => {
   const underlyingBaseContract = getBasedContract(tokenPreviews[underlyingAssetTitle])
 
-  const { data } = useReadContracts({
+  const { data, isLoading } = useReadContracts({
     contracts: [
       {
         ...underlyingBaseContract,
@@ -25,9 +26,14 @@ export const UnderlyingAssetBalance = ({ underlyingAssetTitle, selectedAssetAddr
     ],
   })
 
-  if (!data) {
+  if (isLoading || !data) {
     return null
   }
+
+  if (!verifyContractData(data)) {
+    return <div>Error happened</div>
+  }
+
   const balance = data?.[0].result
   const symbol = data?.[1].result
 
